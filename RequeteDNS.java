@@ -5,6 +5,18 @@ import java.net.InetAddress;
 import java.util.Arrays;
 
 public class RequeteDNS {
+	
+	//Use to test the StringToLabel
+	final protected static char[] hexArray = "0123456789ABCDEF".toCharArray();
+	public static String bytesToHex(byte[] bytes) {
+	    char[] hexChars = new char[bytes.length * 2];
+	    for ( int j = 0; j < bytes.length; j++ ) {
+	        int v = bytes[j] & 0xFF;
+	        hexChars[j * 2] = hexArray[v >>> 4];
+	        hexChars[j * 2 + 1] = hexArray[v & 0x0F];
+	    }
+	    return new String(hexChars);
+	}
 
 	public static byte[] StringToLabel (String nom) {
 		//the result of the method
@@ -13,9 +25,11 @@ public class RequeteDNS {
 		int pos=0,size;
 		//the different part of the label
 		String[] splited = nom.split(".");
+		System.out.println(splited.length);
 		Integer val;
 		for (int i=0;i<splited.length;i++) {
 			size = splited[i].length();
+			System.out.println(size);
 			val = new Integer(size);
 			res[pos]= val.byteValue();
 			byte[] subsequence= splited[i].getBytes();
@@ -35,7 +49,7 @@ public class RequeteDNS {
 		 InetAddress addr = InetAddress.getByName("172.18.12.9");
 		 */
 		byte[] buf = StringToLabel(argv[0]);
-		System.out.println(Arrays.toString(buf));
+		System.out.println(bytesToHex(buf));
 		 }
 		 else System.out.println("Erreur écrire sous la forme : java RequeteDNS <nom>");
 	 }
