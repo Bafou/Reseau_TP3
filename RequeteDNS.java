@@ -24,25 +24,47 @@ public class RequeteDNS {
 		//pos is the position on the byte array
 		int pos=0,size;
 		//the different part of the label
-		String[] splited = nom.split(".");
-		System.out.println(splited.length);
+		String[] splited = nom.split("\\.");
 		Integer val;
-		for (int i=0;i<splited.length;i++) {
-			size = splited[i].length();
-			System.out.println(size);
+		for (String part : splited) {
+			size = part.length();
 			val = new Integer(size);
 			res[pos]= val.byteValue();
-			byte[] subsequence= splited[i].getBytes();
+			pos++;
+			byte[] subsequence= part.getBytes();
 			for (int j=0;j<subsequence.length;j++) 
 			{
-				pos++;
 				res[pos]=subsequence[j];
+				pos++;
 			}		
 		}
 		return res;
 	}
-	
-	 public static void main (String argv[]) {
+
+	public byte[] headerDNS(){
+		byte[] head = new byte[12];
+		//identifiant		
+		head[0] = 0;
+		head[1] = 0;
+		//parametre
+		head[2] = 1;
+		head[3] = 0;
+		//question
+		head[4] = 0;
+		head[5] = 1;
+		//reponse
+		head[6] = 0;
+		head[7] = 0;
+		//autorite
+		head[8] = 0;
+		head[9] = 0;
+		//info complementaire
+		head[10] = 0;
+		head[11] = 0;
+		return head;
+	}
+
+	public static void main (String argv[]) {
 		 if (argv.length == 1) {
 		 /*int port = 53;
 		 byte[] buf = StringToLabel(argv[0]);
