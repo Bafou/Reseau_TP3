@@ -3,6 +3,8 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.util.Arrays;
+import java.util.Random;
+import java.io.ByteArrayOutputStream;
 
 public class RequeteDNS {
 	
@@ -41,11 +43,13 @@ public class RequeteDNS {
 		return res;
 	}
 
-	public byte[] headerDNS(){
+	public static byte[] headerDNS(){
 		byte[] head = new byte[12];
+		byte[] rand = new byte[2];
+		new Random().nextBytes(rand);
 		//identifiant		
-		head[0] = 0;
-		head[1] = 0;
+		head[0] = rand[0];
+		head[1] = rand[1];
 		//parametre
 		head[2] = 1;
 		head[3] = 0;
@@ -64,14 +68,33 @@ public class RequeteDNS {
 		return head;
 	}
 
-	public static void main (String argv[]) {
+	public static byte[] footerDNS(){
+		byte[] foot = new byte[5];
+		//end of name		
+		foot[0] = 0;
+		//type
+		foot[1] = 0;
+		foot[2] = 1;
+		//class
+		foot[3] = 0;
+		foot[4] = 1;
+		return foot;
+	}
+
+	public static void main (String argv[]) throws Exception {
 		 if (argv.length == 1) {
 		 /*int port = 53;
 		 byte[] buf = StringToLabel(argv[0]);
 		 InetAddress addr = InetAddress.getByName("172.18.12.9");
 		 */
 		byte[] buf = StringToLabel(argv[0]);
-		System.out.println(bytesToHex(buf));
+		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+		outputStream.write(headerDNS());
+		outputStream.write(buf);
+		outputStream.write(footerDNS());
+
+		byte[] res = outputStream.toByteArray();
+		System.out.println (bytesToHex(res));
 		 }
 		 else System.out.println("Erreur écrire sous la forme : java RequeteDNS <nom>");
 	 }
