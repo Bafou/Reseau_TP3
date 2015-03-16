@@ -1,12 +1,22 @@
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.util.Arrays;
 import java.util.Random;
-import java.io.ByteArrayOutputStream;
 
-public class RequeteDNS {
+/**
+ * @author Antoine PETIT
+ */
+public class RequeteDNS extends Thread {
+	
+	protected int port;
+	protected String request;
+	
+	public RequeteDNS (int p,String req) {
+		this.port = p;
+		this.request=req;
+	}
 	
 	//Use to test the StringToLabel
 	final protected static char[] hexArray = "0123456789ABCDEF".toCharArray();
@@ -81,21 +91,34 @@ public class RequeteDNS {
 		return foot;
 	}
 
-	public static void main (String argv[]) throws Exception {
-		 if (argv.length == 1) {
-		 /*int port = 53;
-		 byte[] buf = StringToLabel(argv[0]);
-		 InetAddress addr = InetAddress.getByName("172.18.12.9");
-		 */
-		byte[] buf = StringToLabel(argv[0]);
+	public void run () {
+		 
+		byte[] buf = StringToLabel(this.request);
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-		outputStream.write(headerDNS());
-		outputStream.write(buf);
-		outputStream.write(footerDNS());
+		try {
+			outputStream.write(headerDNS());
+			outputStream.write(buf);
+			outputStream.write(footerDNS());
+		} catch (IOException e) {
+			System.out.println(e);
+			return;
+		}
 
 		byte[] res = outputStream.toByteArray();
 		System.out.println (bytesToHex(res));
-		 }
-		 else System.out.println("Erreur écrire sous la forme : java RequeteDNS <nom>");
+		try {
+			InetAddress addr = InetAddress.getByName("");
+			DatagramPacket dp = new DatagramPacket (buf,buf.length, addr,53);
+			DatagramSocket ds= new DatagramSocket(this.port);
+			ds.connect(addr,53);
+			ds.send(dp);
+			ds.disconnect();
+			ds.close();
+		}
+		catch (IOException e) {
+			System.out.println(e);
+			return;
+		}
+			
 	 }
 }
