@@ -8,7 +8,7 @@ import java.util.Random;
 /**
  * @author Antoine PETIT
  */
-public class RequeteDNS extends Thread {
+public class RequeteDNS {
 	
 	protected int port;
 	protected String request;
@@ -91,7 +91,7 @@ public class RequeteDNS extends Thread {
 		return foot;
 	}
 
-	public void run () {
+	public void send () {
 		 
 		byte[] buf = StringToLabel(this.request);
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
@@ -107,8 +107,8 @@ public class RequeteDNS extends Thread {
 		byte[] res = outputStream.toByteArray();
 		System.out.println (bytesToHex(res));
 		try {
-			InetAddress addr = InetAddress.getByName("");
-			DatagramPacket dp = new DatagramPacket (buf,buf.length, addr,53);
+			InetAddress addr = InetAddress.getByName("193.49.225.15");
+			DatagramPacket dp = new DatagramPacket (res,res.length, addr,53);
 			DatagramSocket ds= new DatagramSocket(this.port);
 			ds.connect(addr,53);
 			ds.send(dp);
